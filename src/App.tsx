@@ -2,8 +2,9 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { babies } from './data/babies';
 import GameSummary from './components/GameSummary';
 import { Shuffle } from 'lucide-react';
+import { getImageSource } from './utils/imageLoader';
 
-const TOTAL_ROUNDS = 10;
+const TOTAL_ROUNDS = 6;
 
 function App() {
   const [currentRound, setCurrentRound] = useState(1);
@@ -12,7 +13,7 @@ function App() {
   const [feedback, setFeedback] = useState<{ message: string; isCorrect: boolean } | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
 
-  // Shuffle and select 10 babies for the game
+  // Shuffle and select TOTAL_ROUNDS babies for the game
   const gameSequence = useMemo(() => {
     const shuffled = [...babies].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, TOTAL_ROUNDS);
@@ -30,17 +31,17 @@ function App() {
 
   // Randomize button order
   const [correctButton, wrongButton] = useMemo(() => {
-    return Math.random() < 0.5 
+    return Math.random() < 0.5
       ? [currentBaby.name, wrongAnswer]
       : [wrongAnswer, currentBaby.name];
   }, [currentBaby, wrongAnswer]);
 
   const handleAnswer = (answer: string) => {
     if (selectedAnswer) return; // Prevent multiple answers
-    
+
     setSelectedAnswer(answer);
     const isCorrect = answer === currentBaby.name;
-    
+
     if (isCorrect) {
       setScore(prev => prev + 1);
       setFeedback({ message: "Correct!", isCorrect: true });
@@ -83,14 +84,14 @@ function App() {
             <p className="text-lg font-bold">Score: {score}</p>
           </div>
         </div>
-        
+
         <div className="p-4">
-          <img 
-            src={currentBaby.imageUrl} 
+          <img
+            src={getImageSource(currentBaby.image)}
             alt="Baby"
             className="w-full h-64 object-cover rounded-lg mb-4"
           />
-          
+
           <div className="grid grid-cols-2 gap-4">
             {[correctButton, wrongButton].map((name, index) => (
               <button
@@ -113,7 +114,7 @@ function App() {
               </button>
             ))}
           </div>
-          
+
           {feedback && (
             <div className={`
               mt-4 p-3 rounded-lg text-center font-semibold
